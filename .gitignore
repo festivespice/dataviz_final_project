@@ -44,3 +44,8 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+# project files
+project-01/nunez_project_01_files/*
+project-02/nunez_project_02_files/*
+

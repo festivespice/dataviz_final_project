@@ -1,33 +1,30 @@
 # Data Visualization and Reproducible Research
 
-> Firstname Lastname. 
+> Rafael Nunez 
 
 Learn more about me in my [GitHub profile page](https://github.com/reiminer). 
 
 
-The following is a sample of products created during the _"Data Visualization and Reproducible Research"_ course.
+The following is a sample of products created during the _"Data Visualization and Reproducible Research"_ course in the summer semester of 2023.
 
 
 ## Project 01
 
-In the `project_01/` folder you can find... _[add short description of your revised project here]_
+In the `project_01/` folder you can find _data visualizations about rat cases in New York City_. Here's my favorite data visualization from the exploration: 
 
-**Sample data visualization:** 
+**Listing cities that handled rat cases swiftly:** 
 
-_[include your favorite visualization from this project here]_
-<img src="https://github.com/reisanar/figs/raw/master/echarts.png" width="70%" height="70%">
+![time-efficient cities]('figures/project_1/time_efficiency_plot.png')
 
 
 ## Project 02
 
-In this project, I explored ... _[short description of your revised project goes here]_ Find the code and report in the `project_02/` folder.
+In this project, I explored _Florida's lakes according to their position while focusing on their position on a map._ Find the code and report in the `project_02/` folder. I liked finding out where clusters of lakes were in this visualization: 
 
-**Sample data visualization:** 
+**Checking out where lakes are concentrated in Florida:** 
 
-_[include your favorite visualization from this project here]_
-<img src="https://raw.githubusercontent.com/reisanar/dataviz_final_project/main/figures/fl_higher_ed.png" width="80%" height="80%">
+![lake clusters]('figures/project_2/cluster_plot.png')
 
-(you can place your figures in the `figures/` folder and use the `![](path_to_picture)` option to add the pictures here)
 
 
 ## Project 03

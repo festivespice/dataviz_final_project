@@ -1,0 +1,215 @@
+---
+title: "Mini-Project 02"
+output: 
+  html_document:
+    keep_md: true
+    toc: true
+    toc_float: true
+---
+
+# Data Visualization Project 02
+
+
+```{r}
+set.seed(36)
+
+#used to make pretty maps
+library(plotly)
+#used for readr, ggplot2
+library(tidyverse)
+#used to append descriptive tooltips to parts of maps
+library(glue)
+#used to create 'sf' objects
+library(sf)
+#used to clean invalid geometry
+library(lwgeom)
+ #used for dbscan functions
+library(dbscan)
+#used for creating visualizations using dbscan output
+library(factoextra) 
+#used for saving the interactive plots
+library(htmlwidgets)
+```
+
+# Getting the data
+```{r}
+#Simple features for the lakes geometry. 
+floridaLakesSf <- sf::read_sf("../data/project_2/Florida_Lakes/Florida_Lakes.shp")
+```
+
+```{r}
+#Simple features data: the source of our geometries when mapping
+usCountiesSf <- sf::read_sf("../data/project_2/us_counties.geojson") 
+usStatesSf <- sf::read_sf("../data/project_2/us_states.geojson")
+```
+```{r}
+floridaStateSf <- (usStatesSf %>% 
+  filter(name == "Florida"))$geometry
+
+floridaCountiesSf <- usCountiesSf %>% filter(STATE == "12")
+```
+
+
+# Cleaning the data
+The 'floridaLakesSf' file conveniently has each lake associated with a county, which means that we don't have to figure out which lake is in which county. However, we need to ensure that the names of the lakes are the same. We also can remove some unnecessary columns.  
+
+## Select and rename columns
+```{r}
+floridaCountiesSf <- floridaCountiesSf %>%
+  select(NAME, geometry) %>%
+  rename(county=NAME)
+```
+```{r}
+floridaLakesSf <- floridaLakesSf %>% 
+  select(NAME, COUNTY, SHAPEAREA, geometry) %>%
+  rename(lake=NAME,
+         county=COUNTY,
+         area=SHAPEAREA)
+```
+
+## Match county names
+```{r}
+floridaLakesSf <- floridaLakesSf %>% 
+  mutate(
+    county = str_to_title(county)
+  )
+```
+
+```{r}
+floridaCounties <- unique(floridaCountiesSf$county)
+lakeCounties <- unique(floridaLakesSf$county)
+
+
+setdiff(floridaCounties, lakeCounties)
+
+setdiff(lakeCounties, floridaCounties)
+```
+
+```{r}
+#The county names should be DeSoto and St. Johns
+#That means that the 'floridaLakesSf' tibble has incorrect values
+
+floridaLakesSf <- floridaLakesSf %>% 
+  mutate(county = ifelse(county == "Desoto", "DeSoto", ifelse(county == "St. John", "St. Johns", county))) #if it's either incorrect county, fix the name. If it's not, then don't change the name. 
+```
+
+
+# EDA
+
+## Interactive plot
+Create a choropleth that displays the count of lakes per county
+
+```{r}
+#add summarized data from the 'floridaLakesSf' sf object by making it a tibble and joining the results of the tibble with the 'floridaCountiesSf' data so that we can plot it. 
+
+floridaCountiesSf <- as_tibble(floridaLakesSf) %>% 
+  group_by(county) %>% 
+  summarize(lakeCount = n()) %>%
+  left_join(floridaCountiesSf, by="county") %>% 
+  mutate(label = glue::glue('{county}\n# of lakes: {lakeCount}')) %>% #used to create the popup text per county
+  st_as_sf() #If our data isn't in the form of an 'sf' object, we can't use it in the function 'geom_sf().' 
+```
+
+```{r}
+#
+countyPlot <- ggplot() +
+  geom_sf(data = floridaCountiesSf, color="black", mapping=aes(fill=lakeCount, text=label)) +
+  labs(title="Number of lakes per county") +
+  theme_minimal()
+  
+
+
+ggplotly(countyPlot, tooltip="text", hoverinfo="text")
+
+#try to cmake the visualization categorical, save the html widget, it could be interesting to patchwork another choropleth that shows the size of lakes. 
+ggsave("../figures/project_2/county_plot.png", countyPlot, height=4, width=4)
+
+```
+
+
+## Spatial visualization
+An interactive map that allows users to view each lake in Florida, harnessing the ability to zoom into the graph. 
+
+```{r}
+floridaLakesSf <- floridaLakesSf %>%
+  mutate(
+    data = rownames(.),
+    geometry = st_make_valid(geometry), #a function used to ensure that the geometries are  valid. Necessary for the visualization after this one. 
+    label = glue::glue('{lake}\ncounty: {county}\narea: {area}')
+  ) 
+```
+```{r}
+floridaLakesSf
+```
+
+
+```{r}
+#to plot the Lakes on Florida, first plot a layer of Florida and then plot a layer representing the lakes. The layer with the lakes has the dynamic information in it. 
+lakePlot <- ggplot() +
+  geom_sf(data = floridaStateSf, color="black") +
+  geom_sf(data = floridaLakesSf, mapping=aes(text=label), fill="blue", color="blue") +
+  labs(title="An interactive map displaying Florida's lakes", subtitle="you can hover the map to interact with it!") + 
+  theme_minimal()
+
+ggplotly(lakePlot, tooltip="text", hoverinfo="text")
+saveWidget(ggplotly(lakePlot), file="../figures/project_2/interactiveLakePlot.html") #save the figure, remove color lines (makes lakes bigger than they are)
+
+#warning: this figure takes up a lot of memory when loaded and may lag your browser or editor. 
+```
+
+
+
+
+## Visualization of a model
+I'm going to do a clustering of the centroids of lakes to see if there are distinct regions of lakes.
+
+```{r}
+lakeCentroids <- floridaLakesSf %>%
+  rowwise() %>%
+  mutate(
+    center = st_centroid(geometry), 
+    center_x = st_coordinates(center)[1],
+    center_y = st_coordinates(center)[2]
+  ) %>%
+  as_tibble() %>%
+  select(lake, county, area, center_x, center_y)
+```
+
+
+```{r}
+lakeCentroidsPlot <- ggplot(data = lakeCentroids) + 
+  geom_point(mapping=aes(x=center_x, y=center_y)) + 
+  labs(title="Florida's lakes", subtitle="each dot represents a lake of any size", x="", y="") +
+  theme_minimal()
+lakeCentroidsPlot
+
+ggsave("../figures/project_2/lake_centroids_plot.png", lakeCentroidsPlot, height=4, width=4)
+
+#emphasize that this is supposed to prepare you for the next graph. 
+#is there any way to restore the original size / sacle? 
+
+```
+
+```{r}
+lakeCentroidsXY <- lakeCentroids %>%
+  select(center_x, center_y)
+```
+
+```{r}
+lakeClusters <- dbscan::dbscan(lakeCentroidsXY, eps = .10, minPts = 25)
+lakeClusters #show DBSCAN output
+```
+
+```{r}
+#Used to graph the DBSCAN output with its clusters
+cluster_plot <- fviz_cluster(object = lakeClusters, data = lakeCentroids,  choose.vars=c("center_x", "center_y"), geom = c("point"), ggtheme=theme_minimal(), show.clust.cent = FALSE, pointsize = 1.5, outlier.pointsize = 0.5) + 
+  guides(color="none", shape="none", fill="none") + 
+  labs(title="Plot of major clusters of lakes", subtitle="using DBSCAN, given eps = 0.1, and minPts = 25", x="", y = "")
+```
+
+```{r}
+cluster_plot
+ggsave("../figures/project_2/cluster_plot.png", cluster_plot, height=4, width=4)
+```
+
+A link for what DBSCAN is, how DBSCAN was performed using the 'dbscan' package, and visualized using the 'factoextra' package can be found [here](http://www.sthda.com/english/wiki/wiki.php?id_contents=7940)
