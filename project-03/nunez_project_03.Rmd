@@ -16,9 +16,11 @@ In this exercise you will explore methods to create different types of data visu
 ## PART 1: Density Plots
 
 Using the dataset obtained from FSU's [Florida Climate Center](https://climatecenter.fsu.edu/climate-data-access-tools/downloadable-data), for a station at Tampa International Airport (TPA) for 2022, attempt to recreate the charts shown below which were generated using data from 2016. You can read the 2022 dataset using the code below: 
+```{r}
+library(tidyverse)
+```
 
 ```{r, message=FALSE, warning=FALSE}
-library(tidyverse)
 weather_tpa <- read_csv("https://raw.githubusercontent.com/reisanar/datasets/master/tpa_weather_2022.csv")
 # random sample 
 sample_n(weather_tpa, 4)
@@ -36,6 +38,27 @@ knitr::include_graphics("https://github.com/reisanar/figs/raw/master/tpa_max_tem
 
 Hint: the option `binwidth = 3` was used with the `geom_histogram()` function.
 
+```{r}
+plot_1_data <- weather_tpa %>%
+  mutate(
+    date = ymd(paste(year, month, day)),
+    monthName = month(date, label=TRUE, abbr=FALSE)
+  ) %>%
+  select(monthName, day, max_temp, ave_temp, precipitation, date)
+```
+```{r}
+ggplot(data = plot_1_data) +
+  scale_y_continuous(breaks=seq(0, 20, 5))+
+  scale_x_continuous(breaks=seq(60, 90, 10)) +
+  geom_histogram(mapping=aes(x=max_temp, fill=monthName), binwidth=3) + 
+  labs(x = "Maximum temperatures", y = "Number of days") +
+  theme_bw() +
+  facet_wrap(vars(monthName)) +
+  guides(fill="none")
+```
+
+
+
 (b) Create a plot like the one below:
 
 ```{r, echo = FALSE, out.width="80%", fig.align='center'}
@@ -44,13 +67,34 @@ knitr::include_graphics("https://github.com/reisanar/figs/raw/master/tpa_max_tem
 
 Hint: check the `kernel` parameter of the `geom_density()` function, and use `bw = 0.5`.
 
+```{r}
+ggplot(data = plot_1_data) + 
+  geom_density(mapping=aes(x = max_temp, y=..density..), bw=0.5, kernel="epanechnikov", fill="grey", linewidth = 1, na.rm=T) +
+  scale_x_continuous(limits=c(55, 98), breaks=seq(60, 90, 10)) + 
+  labs(x = "Maximum temperature") + 
+  theme_minimal()
+  
+```
+
+
 (c) Create a plot like the one below:
 
 ```{r, echo = FALSE, out.width="80%", fig.align='center'}
 knitr::include_graphics("https://github.com/reisanar/figs/raw/master/tpa_max_temps_density_facet.png")
 ```
 
+
 Hint: default options for `geom_density()` were used. 
+
+```{r}
+ggplot(data = plot_1_data) +
+  scale_x_continuous(breaks=seq(60, 90, 10)) +
+  geom_density(mapping=aes(x=max_temp, fill=monthName), na.rm=T) + 
+  labs(x = "Maximum temperatures", y = "Number of days") +
+  theme_bw() +
+  facet_wrap(vars(monthName)) +
+  guides(fill="none")
+```
 
 (d) Generate a plot like the chart below:
 
@@ -59,10 +103,57 @@ Hint: default options for `geom_density()` were used.
 knitr::include_graphics("https://github.com/reisanar/figs/raw/master/tpa_max_temps_ridges_plasma.png")
 ```
 
+
 Hint: use the`{ggridges}` package, and the `geom_density_ridges()` function paying close attention to the `quantile_lines` and `quantiles` parameters. The plot above uses the `plasma` option (color scale) for the _viridis_ palette.
+```{r}
+library(ggridges)
+```
+
+
+```{r}
+ggplot(data = plot_1_data) + 
+  geom_density_ridges_gradient(mapping=aes(x = max_temp, y = monthName, fill=..x..), na.rm=T, size=1, quantile_lines=T, quantiles=c(0.50)) + 
+  scale_fill_viridis_c(option="C", name="") +
+  labs(y = "", x = "Maximum temperature (in Farenheit degrees)") +
+  scale_x_continuous(breaks=seq(50, 100, 10)) +
+  theme_ridges()
+   
+```
+
+
+
 
 
 (e) Create a plot of your choice that uses the attribute for precipitation _(values of -99.9 for temperature or -99.99 for precipitation represent missing data)_.
+```{r}
+getSeason <- function(input.date){
+  numeric.date <- 100*month(input.date)+day(input.date)
+  cuts <- base::cut(numeric.date, breaks = c(0,319,0620,0921,1220,1231)) 
+  levels(cuts) <- c("Winter","Spring","Summer","Fall","Winter")
+  return(cuts)
+}
+
+precipitation_plot_data <- plot_1_data %>%
+  filter(precipitation >= 0.1) %>% #we don't care about days almost no rain.
+  mutate(
+    season = getSeason(date)
+  )
+```
+
+```{r}
+library(gghighlight)
+```
+
+
+```{r}
+ggplot(data = precipitation_plot_data, mapping=aes(x = ave_temp, y=precipitation, color=season)) + 
+  geom_point() + 
+  gghighlight::gghighlight() +
+  facet_wrap(vars(season)) + 
+  theme_minimal() +
+  labs(x = "average temperature (in Farenheit degrees)", title="relationship between season, temperature, and precipitation")
+  
+```
 
 
 
