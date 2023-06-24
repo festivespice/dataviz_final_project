@@ -212,4 +212,4 @@ cluster_plot
 ggsave("../figures/project_2/cluster_plot.png", cluster_plot, height=4, width=4)
 ```
 
-A link for what DBSCAN is, how DBSCAN was performed using the 'dbscan' package, and visualized using the 'factoextra' package can be found [here](http://www.sthda.com/english/wiki/wiki.php?id_contents=7940)
+A link for what DBSCAN is, how DBSCAN was performed using the 'dbscan' package, and visualized using the 'factoextra' package can be found [here](http://www.sthda.com/english/wiki/wiki.php?id_contents=7940).

@@ -83,10 +83,10 @@ sample_n(weather_tpa, 4)
 ## # A tibble: 4 × 7
 ##    year month   day precipitation max_temp min_temp ave_temp
 ##   <dbl> <dbl> <dbl>         <dbl>    <dbl>    <dbl>    <dbl>
-## 1  2022     6     2           1.6       91       73     82  
-## 2  2022    11    24           0         79       67     73  
-## 3  2022     3     8           0         86       74     80  
-## 4  2022    12    12           0         76       59     67.5
+## 1  2022     2    20          0          82       54     68  
+## 2  2022    12    22          0.15       69       59     64  
+## 3  2022     5    12          0          87       66     76.5
+## 4  2022    11     8          0.06       85       69     77
 ```
 
 See https://www.reisanar.com/slides/relationships-models#10 for a reminder on how to use this type of dataset with the `lubridate` package for dates and times (example included in the slides uses data from 2016).
@@ -110,7 +110,7 @@ plot_1_data <- weather_tpa %>%
 ```
 
 ```r
-ggplot(data = plot_1_data) +
+problem_1a <- ggplot(data = plot_1_data) +
   scale_y_continuous(breaks=seq(0, 20, 5))+
   scale_x_continuous(breaks=seq(60, 90, 10)) +
   geom_histogram(mapping=aes(x=max_temp, fill=monthName), binwidth=3) + 
@@ -118,9 +118,16 @@ ggplot(data = plot_1_data) +
   theme_bw() +
   facet_wrap(vars(monthName)) +
   guides(fill="none")
+
+problem_1a
 ```
 
 ![](nunez_project_03_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
+
+```r
+ggsave("../figures/project_3/problem_1a.png", problem_1a, width=6, height=4)
+```
+
 
 
 
@@ -132,11 +139,13 @@ Hint: check the `kernel` parameter of the `geom_density()` function, and use `bw
 
 
 ```r
-ggplot(data = plot_1_data) + 
+problem_1b <- ggplot(data = plot_1_data) + 
   geom_density(mapping=aes(x = max_temp, y=..density..), bw=0.5, kernel="epanechnikov", fill="grey", linewidth = 1, na.rm=T) +
   scale_x_continuous(limits=c(55, 98), breaks=seq(60, 90, 10)) + 
   labs(x = "Maximum temperature") + 
   theme_minimal()
+
+problem_1b
 ```
 
 ```
@@ -144,7 +153,12 @@ ggplot(data = plot_1_data) +
 ## ℹ Please use `after_stat(density)` instead.
 ```
 
-![](nunez_project_03_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
+![](nunez_project_03_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
+
+```r
+ggsave("../figures/project_3/problem_1b.png", problem_1b, width=6, height=4)
+```
+
 
 
 (c) Create a plot like the one below:
@@ -156,16 +170,23 @@ Hint: default options for `geom_density()` were used.
 
 
 ```r
-ggplot(data = plot_1_data) +
+problem_1c <- ggplot(data = plot_1_data) +
   scale_x_continuous(breaks=seq(60, 90, 10)) +
   geom_density(mapping=aes(x=max_temp, fill=monthName), na.rm=T) + 
   labs(x = "Maximum temperatures", y = "Number of days") +
   theme_bw() +
   facet_wrap(vars(monthName)) +
   guides(fill="none")
+
+problem_1c
 ```
 
-![](nunez_project_03_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
+![](nunez_project_03_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
+
+```r
+ggsave("../figures/project_3/problem_1c.png", problem_1c, width=6, height=4)
+```
+
 
 (d) Generate a plot like the chart below:
 
@@ -186,12 +207,14 @@ library(ggridges)
 
 
 ```r
-ggplot(data = plot_1_data) + 
+problem_1d <- ggplot(data = plot_1_data) + 
   geom_density_ridges_gradient(mapping=aes(x = max_temp, y = monthName, fill=..x..), na.rm=T, size=1, quantile_lines=T, quantiles=c(0.50)) + 
   scale_fill_viridis_c(option="C", name="") +
   labs(y = "", x = "Maximum temperature (in Farenheit degrees)") +
   scale_x_continuous(breaks=seq(50, 100, 10)) +
   theme_ridges()
+
+problem_1d
 ```
 
 ```
@@ -203,7 +226,16 @@ ggplot(data = plot_1_data) +
 ## ℹ Please use the `linewidth` aesthetic instead.
 ```
 
-![](nunez_project_03_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
+![](nunez_project_03_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
+
+```r
+ggsave("../figures/project_3/problem_1d.png", problem_1d, width=6, height=4)
+```
+
+```
+## Picking joint bandwidth of 1.93
+```
+
 
 
 
@@ -239,10 +271,10 @@ library(gghighlight)
 
 
 ```r
-ggplot(data = precipitation_plot_data, mapping=aes(x = ave_temp, y=precipitation, color=season)) + 
+problem_1e <- ggplot(data = precipitation_plot_data, mapping=aes(x = ave_temp, y=precipitation, color=season)) + 
   geom_point() + 
   gghighlight::gghighlight() +
-  facet_wrap(vars(season)) + 
+  facet_wrap(vars(season), nrow=2) + 
   theme_minimal() +
   labs(x = "average temperature (in Farenheit degrees)", title="relationship between season, temperature, and precipitation")
 ```
@@ -255,13 +287,20 @@ ggplot(data = precipitation_plot_data, mapping=aes(x = ave_temp, y=precipitation
 ## Too many data points, skip labeling
 ```
 
-![](nunez_project_03_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
+```r
+problem_1e
+```
+
+![](nunez_project_03_files/figure-html/unnamed-chunk-19-1.png)<!-- -->
+
+```r
+ggsave("../figures/project_3/problem_1e.png", problem_1e, width=6, height=4)
+```
+
 
 
 
 ## PART 2 
-
-> **You can choose to work on either Option (A) or Option (B)**. Remove from this template the option you decided not to work on. 
 
 
 ### Option (A): Visualizing Text Data
@@ -276,17 +315,13 @@ Make sure to include a copy of the dataset in the `data/` folder, and reference 
 
 - [RateMyProfessors comments](https://github.com/reisanar/datasets/blob/master/rmp_wit_comments.csv)
 
-Let's find the least positive and most positive tokens in sentiment analysis. 
-
-Let's also see if we can create word networks that relate to that. 
-
 - [FL Poly News Articles](https://github.com/reisanar/datasets/blob/master/flpoly_news_SP23.csv)
 
 
 (to get the "raw" data from any of the links listed above, simply click on the `raw` button of the GitHub page and copy the URL to be able to read it in your computer using the `read_csv()` function)
 
 ```r
-library(tidytext)
+library(tidytext) #used to break the text into tokens or single strings
 ```
 
 ```
@@ -294,7 +329,7 @@ library(tidytext)
 ```
 
 ```r
-library(stopwords)
+library(stopwords) #used to remove words that may be less significant or less helpful in certain analyses. 
 ```
 
 ```
@@ -362,6 +397,7 @@ bingLexicon
 
 
 ```r
+#return only the words that are in the bingLexicon and count the number of times that they happen. Associate each word with their sentiment. 
 bing_hits <- tidy_text %>%
   inner_join(bingLexicon, by="word") %>%
   group_by(word, sentiment) %>%
@@ -400,7 +436,7 @@ bing_hits
 ```r
 #we want the top five and bottom five words. 
 
-diverging_plot_data <- rbind(
+diverging_plot_data <- rbind( #bind the rows of these two tibbles
   bing_hits %>% arrange(desc(n)) %>% head(5),
   bing_hits %>% arrange(n) %>% head(5)
 ) %>% arrange(desc(n))
@@ -427,27 +463,36 @@ diverging_plot_data
 
 
 ```r
-ggplot(data = diverging_plot_data, mapping=aes(x=fct_reorder(word, n), y=n, fill=sentiment)) +
+#a divergent plot to show diverging data
+problem_2a <- ggplot(data = diverging_plot_data, mapping=aes(x=fct_reorder(word, n), y=n, fill=sentiment)) +
   geom_col() + 
   coord_flip() +
   scale_fill_discrete(breaks=c("positive", "negative")) + 
-  labs(y = "word frequency", x="", title="Most impactful words", subtitle="Sentiments of the top 5 most negative and positive words.") +
-  theme(legend.title=element_blank()) +
+  labs(y = "word frequency", x="", title="Most impactful words", subtitle="Sentiments of the top 5 most negative and positive words.", fill=NULL) + #for some reason, I couldn't make the legend title blank in the 'theme()' layer, so I just did it here with 'fill=NULL'
   theme_minimal()
+
+problem_2a
 ```
 
-![](nunez_project_03_files/figure-html/unnamed-chunk-23-1.png)<!-- -->
+![](nunez_project_03_files/figure-html/unnamed-chunk-28-1.png)<!-- -->
+
+```r
+ggsave("../figures/project_3/problem_2a.png", problem_2a, width=6, height=4)
+```
 
 
-The significant skew towards a positive sentiment indicates that students generally like the classes offered by the professor, and that the professor or his classes can be "great" or "helpful." The visualization also shows that the professor or classes can also be "difficult" or "hard," contrasting what was said about a class or professor being easy, but the 'easy' category has a higher frequency than either of the negative ones. 
+
+The significant skew towards a positive sentiment indicates that students generally like the classes offered by the professor, and that the professor or his classes can be "great" or "helpful." The 'great' token is a notable outlier with a very high frequency as a word with a positive sentiment. The visualization also shows that the professor or classes can also be "difficult" or "hard," contrasting what was said about a class or professor being easy, but the 'easy' category has a higher frequency than either of the negative ones. 
 
 
 I notice that the classes can be segmented into those that have four digits for the ID and those that have 3. This might indicate a lower level of classes or a different university. Originally, I was going to do a sentiment analysis on the different groups, but then I realized that the data isn't sequential and not much value would be gained by splitting the text into chunks and doing something like that. Instead, I'd like to see how word importance might change between the groups. 
+
 
 ```r
 course_sentiments <- clean_text %>% 
   mutate(
     fourDigitCourse = str_detect(course, ".*\\d{4}") #checks whether a course has four digits 
+    #.* is a wildcard that works until (loops because of '*') there is a potential pattern of 4 numbers. 
   )
 ```
 
@@ -458,7 +503,7 @@ grouped_word_counts <- course_sentiments %>%
   ungroup()
 
 tf_idf_groups <- grouped_word_counts %>%
-  bind_tf_idf(word, fourDigitCourse, n) %>%
+  bind_tf_idf(word, fourDigitCourse, n) %>% #obtain the tf, idf, and tf_idf values of the words according to the groups of 'fourDigitCourse' which is binary. 
   arrange(desc(tf_idf))
 
 tf_idf_plot_data <- tf_idf_groups %>%
@@ -473,7 +518,7 @@ tf_idf_plot_data <- tf_idf_groups %>%
 
 
 ```r
-ggplot(tf_idf_plot_data, mapping=aes(x=tf_idf, y=fct_reorder(word, tf_idf))) +
+problem_2b <- ggplot(tf_idf_plot_data, mapping=aes(x=tf_idf, y=fct_reorder(word, tf_idf))) +
   geom_col() + 
   guides(fill=FALSE) + 
   facet_wrap(vars(fourDigitCourse), scales=c("free"), labeller=as_labeller(c(
@@ -489,8 +534,19 @@ ggplot(tf_idf_plot_data, mapping=aes(x=tf_idf, y=fct_reorder(word, tf_idf))) +
 ## of ggplot2 3.3.4.
 ```
 
-![](nunez_project_03_files/figure-html/unnamed-chunk-26-1.png)<!-- -->
+```r
+problem_2b
+```
 
-Additional information describing the 'tf-idf' value can be found [here](https://cran.r-project.org/web/packages/tidytext/vignettes/tf_idf.html)
+![](nunez_project_03_files/figure-html/unnamed-chunk-32-1.png)<!-- -->
+
+```r
+ggsave("../figures/project_3/problem_2b.png", problem_2b, width=6, height=4)
+```
+
+There doesn't seem to be a significant difference between the importance of words. This sort of technique is probably better reserved for larger data sets, but I thought that it was worth investigating. The odd pattern with the least important values shown for both graphs being very similar might be caused by the small amount of text. 
+
+Additional information describing the 'tf-idf' value can be found [here].(https://cran.r-project.org/web/packages/tidytext/vignettes/tf_idf.html)
+
 
 
