@@ -14,12 +14,12 @@ In the `project_01/` folder you can find _data visualizations about rat cases in
 
 **Listing cities that handled rat cases swiftly:** 
 
-[time-efficient cities](https://github.com/festivespice/dataviz_final_project/blob/main/figures/project_1/time_efficiency_plot.png)
+![time-efficient cities](https://github.com/festivespice/dataviz_final_project/blob/main/figures/project_1/time_efficiency_plot.png)
 
 
 ## Project 02
 
-In this project, I explored _Florida's lakes according to their position while focusing on their position on a map.~_ Find the code and report in the `project_02/` folder. I liked finding out where clusters of lakes were in this visualization: 
+In this project, I explored _Florida's lakes according to their position while focusing on their position on a map._ Find the code and report in the `project_02/` folder. I liked finding out where clusters of lakes were in this visualization: 
 
 **Checking out where lakes are concentrated in Florida:** 
 
