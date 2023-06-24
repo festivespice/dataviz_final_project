@@ -38,6 +38,8 @@ In `project_03`, I explored _weather data, and then text data about professor re
 
 ### Moving Forward
 
+![going somewhere](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExeXlobG44bGZqYjhiNjFwNmlmNnl2Ym1nd2I1cmczN3Y5NGpvZHE3NyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3MTQxYZeiDm12/giphy.gif)
+
 I have learned a lot in this class! I've been making data visualizations ever since my Junior year at Florida Polytechnic in the class Statistical Learning all the way up through some machine learning and other classes that used R, but I have never been as conscious as I am now about carefully designing visualizations, and the different types of visualizations that I can make as well as when they're appropriate. What I love about this class is that it's empowering: I feel like I can carefully make visualizations for almost anything that I feel like I need to make in the future. 
 
 I'd say that the biggest area of growth for me was being conscious of what I was displaying to the user. I still struggle from time to time, but the most helpful concentrated piece of wisdom that I've learned is to strip your graph of aesthetics and color once you're done making it, so that you can iteratively and consciously add back only what's necessary to clearly tell a story that is hiding the data.
