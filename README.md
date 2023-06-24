@@ -38,7 +38,7 @@ In `project_03`, I explored _weather data, and then text data about professor re
 
 ### Moving Forward
 
-![going somewhere](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExeXlobG44bGZqYjhiNjFwNmlmNnl2Ym1nd2I1cmczN3Y5NGpvZHE3NyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3MTQxYZeiDm12/giphy.gif)
+![going somewhere](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdGUwbHU0MzZ1aTkxZ2UyM2prejYyMzIxd2pqZjNxOTNicW5kOW9vMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/8IDovXLAixCDu/giphy.gif)
 
 I have learned a lot in this class! I've been making data visualizations ever since my Junior year at Florida Polytechnic in the class Statistical Learning all the way up through some machine learning and other classes that used R, but I have never been as conscious as I am now about carefully designing visualizations, and the different types of visualizations that I can make as well as when they're appropriate. What I love about this class is that it's empowering: I feel like I can carefully make visualizations for almost anything that I feel like I need to make in the future. 
 
